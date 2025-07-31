@@ -2,12 +2,15 @@ import Todo from "./Components/Todo";
 import Form from "./Components/Form";
 import FilterButton from "./Components/FilterButton";
 function App(props) {
+  function addTask(name) {
+    alert(name);
+  }
   const tasksLisk = props.tasks.map((task) =>
     (<Todo id={task.id} name={task.name} key={task.id} defaultChecked={task.completed} />))
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
-      <Form />
+      <Form onSubmit={addTask} />
       <div className="filters btn-group stack-exception">
         <FilterButton />
         <FilterButton />
