@@ -4,6 +4,13 @@ import { useState } from "react";
 import {nanoid} from "nanoid";
 import FilterButton from "./Components/FilterButton";
 function App(props) {
+  const FILTER_MAP={
+    All:()=>true,
+    Active:(task)=>!task.completed,
+    completed:(task)=>task.completed
+  }
+  const FILTER_NAME=Object.keys(FILTER_MAP);
+  const[filter,setFilter]=useState("All");
   const [tasks,setTasks]=useState(props.tasks);
   function addTask(name) {
 const newTask={id:`todo-${nanoid()}`,name,completed:false};
@@ -22,8 +29,30 @@ function deleteTasks(id){
 const remainingTasks=tasks.filter((task)=>id!==task.id);
 setTasks(remainingTasks);
 }
-  const tasksLisk =tasks.map((task) =>
-    (<Todo id={task.id} name={task.name} key={task.id} defaultChecked={task.completed} changeCompleted={changeCompleted} deleteTasks={deleteTasks}/>))
+function editTasks(id,newName){
+  const editedLisk=tasks.map((task)=>{
+    if(id===task.id){
+      return {...task,name:newName};
+    }
+    return(task);
+  });
+  setTasks(editedLisk);
+}
+const filterLisk=FILTER_NAME.map((name)=>
+  (<FilterButton name={name}
+    key={name}
+    isPressed={name===filter}
+    setFilter={setFilter}/>
+));
+  const tasksLisk =tasks.filter(FILTER_MAP[filter])
+  .map((task) =>
+    (<Todo id={task.id} 
+      name={task.name}
+       key={task.id} 
+       defaultChecked={task.completed}
+        changeCompleted={changeCompleted}
+         deleteTasks={deleteTasks}
+         editTasks={editTasks}/>))
   const sJudge=(tasksLisk.length)<=1?"task":"tasks";
   const listHeading=`${tasksLisk.length} ${sJudge} remaining`;
   return (
@@ -31,9 +60,7 @@ setTasks(remainingTasks);
       <h1>TodoMatic</h1>
       <Form onSubmit={addTask} />
       <div className="filters btn-group stack-exception">
-        <FilterButton />
-        <FilterButton />
-        <FilterButton />
+      {filterLisk}
       </div>
       <h2 id="list-heading">{listHeading}</h2>
       <ul
