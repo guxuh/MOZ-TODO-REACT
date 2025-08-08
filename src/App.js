@@ -1,7 +1,8 @@
 import Todo from "./Components/Todo";
 import Form from "./Components/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {nanoid} from "nanoid";
+import {useRef} from "react";
 import FilterButton from "./Components/FilterButton";
 function App(props) {
   const FILTER_MAP={
@@ -12,6 +13,20 @@ function App(props) {
   const FILTER_NAME=Object.keys(FILTER_MAP);
   const[filter,setFilter]=useState("All");
   const [tasks,setTasks]=useState(props.tasks);
+  const listHeadingRef=useRef(null);
+  function usePrevious(value){
+      const ref=useRef(null);
+      useEffect(()=>{
+      ref.current=value;
+   });
+   return ref.current;
+    }
+    const previousTaksLength=usePrevious(tasks.length);
+    useEffect(()=>{
+      if(tasks.length<previousTaksLength){
+        listHeadingRef.current.focus();
+      }
+    });
   function addTask(name) {
 const newTask={id:`todo-${nanoid()}`,name,completed:false};
 setTasks([newTask,...tasks]);
@@ -62,7 +77,7 @@ const filterLisk=FILTER_NAME.map((name)=>
       <div className="filters btn-group stack-exception">
       {filterLisk}
       </div>
-      <h2 id="list-heading">{listHeading}</h2>
+      <h2 id="list-heading" ref={listHeadingRef} tabIndex={"-1"}>{listHeading}</h2>
       <ul
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading">

@@ -5,15 +5,24 @@ import {useRef} from"react";
 export default function Todo(props) {
   const editFieldRef=useRef(null);
   const editButtonRef=useRef(null);
+   const [isEditing,setEditing]=useState(false);
+  function usePrevious(value){
+    const ref=useRef(null);
+    useEffect(()=>{
+    ref.current=value;
+ });
+ return ref.current;
+  }
+  const wasEdingting=usePrevious(isEditing);
   useEffect(()=>{
-  if(isEditing){
+  if(!wasEdingting&&isEditing){
     editFieldRef.current.focus();
   }
-else{
+else if(wasEdingting&&!isEditing){
   editButtonRef.current.focus();
 }});
 const [newName,setNewName]=useState("");
-  const [isEditing,setEditing]=useState(false);
+ 
 function handleChange(e){
 setNewName(e.target.value);
 }
@@ -63,7 +72,7 @@ const viewTemplate = (
       <button
         type="button"
         className="btn btn__danger"
-        onClick={() => props.deleteTask(props.id)}>
+        onClick={() => props.deleteTasks(props.id)}>
         Delete <span className="visually-hidden">{props.name}</span>
       </button>
     </div>
